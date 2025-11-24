@@ -17,7 +17,7 @@ public class Employee {
         this.name = name;
         this.role = role;
         this.password = password;
-        // this.outletCode = "C60"; // Hardcoded to KLCC outlet as a temporary fix
+        this.outletCode = outletCode;
     }
 
     // 3. Getters (Accessors) - Public methods to READ the private data
