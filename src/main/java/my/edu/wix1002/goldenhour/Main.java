@@ -84,7 +84,7 @@ public class Main {
                     if (loggedInEmployee.getRole().equals("Manager")) {
                         showManagerMenu(input, allEmployees, outletCode);
                     } else {
-                        showEmployeeMenu(input, loggedInEmployee);
+                        showEmployeeMenu(input, loggedInEmployee, allModels, allOutlets);
                     }
                 } else {
                     System.out.println("\nLogin Failed: Invalid User ID or Password. ");
@@ -183,7 +183,7 @@ public class Main {
             System.err.println("Error saving employee data: " + e.getMessage());
         }
     }
-    private static void showEmployeeMenu(Scanner input, Employee loggedInEmployee, List<Model> allModels) {
+    private static void showEmployeeMenu(Scanner input, Employee loggedInEmployee, List<Model> allModels, List<Outlet> allOutlets) {
         boolean running = true;
         while (running) {
             System.out.println("\n=== Employee Menu ===");
@@ -201,8 +201,7 @@ public class Main {
             String choice = input.nextLine();
             switch (choice) {
                 case "1":
-                    System.out.println("Log Attendance - Coming soon!");
-                    running = false;
+                    AttendanceSystem.showAttendanceMenu(input, loggedInEmployee, allOutlets);
                     break;
                 case "2":
                     System.out.println("Morning Stock Count - Coming soon!");
@@ -218,7 +217,6 @@ public class Main {
                     break;
                 case "5":
                     salesSystem.recordNewSale(input, loggedInEmployee, allModels);
-                    break
                     break;
                 case "6":
                     System.out.println("Search Stock Information - Coming soon!");
