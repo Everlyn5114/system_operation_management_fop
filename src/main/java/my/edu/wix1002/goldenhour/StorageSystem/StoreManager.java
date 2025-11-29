@@ -112,6 +112,82 @@ public class StoreManager {
         
     }
 
+    //SAVES SALES RECORD
+    public static void appendSalesRecord(String[] saleRecord) {
+        try(CSVWriter writer = new CSVWriter(
+            new FileWriter("data/sales.csv", true))) {
+
+            writer.writeNext(saleRecord);
+            System.out.println("Sale record saved.");
+
+        } catch (IOException e) {
+            System.err.println("Error saving sale record: " + e.getMessage());
+        }   
+    }
+
+    //SAVES STOCK STORAGE
+
+    //1. Save morning stock count
+    public static void appendMorningStock(String[] record) {
+        String filePath = "data/morning_stock.csv";
+
+        try (CSVWriter writer = new CSVWriter(
+            new FileWriter(filePath, true))) {
+
+            //If file is new, write header
+            if (Files.size(Paths.get(filePath)) == 0) {
+                writer.writeNext(new String[]{
+                    "EmployeeID", "OutletCode", "Date", "ModelID", "CountedQty"
+                });
+            }
+
+            writer.writeNext(record);
+
+        } catch(IOException e){
+                System.err.println("Error saving morning stock count: " + e.getMessage());
+        }
+    }
+
+    //2. Save stock-in transaction
+    public static void appendStockIn(String[] record) {
+        String filePath = "data/stock_in.csv";
+
+        try (CSVWriter writer = new CSVWriter(
+                new FileWriter(filePath, true))) {
+
+            if (Files.size(Paths.get(filePath)) == 0) {
+                writer.writeNext(new String[]{
+                    "EmployeeID", "OutledCode", "Date", "ModelID", "QuantityIn"
+                });
+            }
+
+            writer.writeNext(record);
+
+        } catch (IOException e) {
+            System.err.println("Error saving stock-in: " + e.getMessage());
+        }  
+    }
+
+    //3. Save stock-out transaction
+    public static void appendStockOut(String[] record) {
+        String filePath = "data/stock_out.csv";
+
+        try (CSVWriter writer = new CSVWriter(
+                new FileWriter(filePath, true))) {
+
+            if (Files.size(Paths.get(filePath)) == 0) {
+                writer.writeNext(new String[]{
+                        "EmployeeID", "OutletCode", "Date", "ModelID", "QuantityOut", "Reason" 
+                });
+            }
+
+            writer.writeNext(record);
+            
+        } catch (IOException e) {
+            System.err.println("Error saving stock-out: " + e.getMessage());
+        }
+    }
+
 
 }
 
