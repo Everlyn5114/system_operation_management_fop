@@ -187,7 +187,5 @@ public class StoreManager {
             System.err.println("Error saving stock-out: " + e.getMessage());
         }
     }
-
-
 }
 
