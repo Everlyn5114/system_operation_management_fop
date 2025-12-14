@@ -97,19 +97,36 @@ public class StoreManager {
         String filePath = "data/attendance.csv";
         try {
             List<String> lines = Files.readAllLines(Paths.get(filePath));
-            for (int i = 1; i < lines.size(); i++){
+            List<String[]> records = new ArrayList<>();
+
+            for (int i = 0; i < lines.size(); i++){
                 String[] parts = lines.get(i).split("," , -1);
-                if (parts.length >= 5 && parts[0].equals(employeeID) && parts[1].equals(dateStr)){
-                    parts[3] = clockOutTime;
-                    lines.set(i, String.join(",", parts));
-                    break;
+
+                //skip header
+                if (i > 0 && parts.length >= 5 && 
+                    parts[0].replace("\"", "").equals(employeeID) &&
+                    parts[1].replace("\"", "").equals(dateStr)) {
+
+                        parts[3] = clockOutTime;    //update clock-out
+                    }
+
+                    //remove old quotes
+                    for (int j = 0; j < parts.length; j++) {
+                        parts[j] = parts[j].replace("\"", "");
+                    }
+
+                    records.add(parts);
+            }
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(filePath))) {
+                for (String[] r : records) {
+                    writer.writeNext(r);
                 }
             }
-            Files.write(Paths.get(filePath), lines);
+
         } catch (IOException e) {
             System.err.println("Error updating clock out: " + e.getMessage());
-        }
-        
+        }    
     }
 
     //SAVES SALES RECORD
