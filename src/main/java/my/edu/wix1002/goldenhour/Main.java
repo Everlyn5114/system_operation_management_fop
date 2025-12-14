@@ -202,12 +202,12 @@ public class Main {
                     running = false;
                     break;
                 case "3":
-                    System.out.println("Stock In - Coming soon!");
-                    running = false;
+                    StockManagement.setEmployeeName(loggedInEmployee.getName());
+                    StockManagement.main(new String[]{});  // launches the StockManagement flow
                     break;
                 case "4":
-                    System.out.println("Stock Out - Coming soon!");
-                    running = false;
+                    StockManagement.setEmployeeName(loggedInEmployee.getName());
+                    StockManagement.main(new String[]{});  // launches the StockManagement flow
                     break;
                 case "5":
                     salesSystem.recordNewSale(input, loggedInEmployee, allModels);
