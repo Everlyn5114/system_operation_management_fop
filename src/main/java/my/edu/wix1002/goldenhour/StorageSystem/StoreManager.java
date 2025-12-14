@@ -82,7 +82,7 @@ public class StoreManager {
         
     }
     //SAVE ATTENDANCES (clock in)
-    public static void appendAttendance(String[] record) {
+    public static void appendAttendance(String[] record) { //receives record array from AttendanceSystem
         try (CSVWriter writer = new CSVWriter(
             new FileWriter("data/attendance.csv", true))) {
 

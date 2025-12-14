@@ -4,6 +4,7 @@ import my.edu.wix1002.goldenhour.model.Employee;
 import my.edu.wix1002.goldenhour.model.Model;
 import my.edu.wix1002.goldenhour.model.Outlet;
 import my.edu.wix1002.goldenhour.util.DataLoader;
+import my.edu.wix1002.goldenhour.StorageSystem.StoreManager;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -161,25 +162,18 @@ public class Main {
             System.out.println("Error: Invalid role! Please enter 'Part-time' or 'Full-time'");
         } //adding more flexible input
 
-        // Create new employee and save to CSV
+        // create new employee and save to CSV using StoreManager
         try {
-            String newEntry = String.format("%s,%s,%s,%s%n", 
-                validEmployeeId, name, role, password);
-
-            // List<String> allLines = Files.readAllLines(Paths.get(DataLoader.EMPLOYEE_FILE_PATH));
-            // allLines.removeIf(line -> line.startsWith("null,"));
-            // allLines.add(newEntry);
-            Files.write(Paths.get(DataLoader.EMPLOYEE_FILE_PATH), 
-                       newEntry.getBytes(), 
-                       StandardOpenOption.APPEND);
-            
-            // Add to current list
+            // Create new employee and add to the in-memory list
             Employee newEmployee = new Employee(validEmployeeId, name, role, password, outletCode);
             allEmployees.add(newEmployee);
-            
+
+            // using StoreManager which handles writing the full CSV
+            StoreManager.saveEmployees(allEmployees);
+
             System.out.println("\nEmployee successfully registered!");
-            
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             System.err.println("Error saving employee data: " + e.getMessage());
         }
     }
