@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<VBox xmlns="http://javafx.com/javafx/11.0.2"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="my.edu.wix1002.goldenhour.ui.DashboardController" spacing="10" alignment="CENTER" prefWidth="600" prefHeight="400">
+    <children>
+        <Label fx:id="welcomeLabel" style="-fx-font-size:16px;"/>
+        <HBox spacing="10">
+            <Button text="Clock In" onAction="#onClockIn"/>
+            <Button text="Clock Out" onAction="#onClockOut"/>
+            <Button text="View Stock" onAction="#onViewStock"/>
+            <Button text="Record Sale" onAction="#onRecordSale"/>
+            <Button text="Logout" onAction="#onLogout"/>
+        </HBox>
+        <Label fx:id="statusLabel" style="-fx-text-fill:green;"/>
+    </children>
+</VBox>
