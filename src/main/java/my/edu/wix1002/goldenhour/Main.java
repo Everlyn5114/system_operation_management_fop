@@ -198,8 +198,8 @@ public class Main {
                     AttendanceSystem.showAttendanceMenu(input, loggedInEmployee, allOutlets);
                     break;
                 case "2":
-                    System.out.println("Morning Stock Count - Coming soon!");
-                    running = false;
+                    StockManagement.setEmployeeName(loggedInEmployee.getName());
+                    StockManagement.main(new String[]{});
                     break;
                 case "3":
                     StockManagement.setEmployeeName(loggedInEmployee.getName());
