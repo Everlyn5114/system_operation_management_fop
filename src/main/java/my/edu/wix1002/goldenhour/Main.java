@@ -197,6 +197,7 @@ public class Main {
                     break;
                 case "2":
                     StockManagement.setEmployeeName(loggedInEmployee.getName());
+                    StockManagement.setEmployeeID(loggedInEmployee.getEmployeeID());
                     StockManagement.main(new String[]{});
                     break;
                 case "3":
