@@ -29,39 +29,12 @@ days are not overwritten. All stock movements for the same day should
 be appended to the same file.
  */
 
-/*
-This module enables employees to manage and update stock-related 
-information in the store. 
-1. Morning and Night Stock Count
-Employees must perform stock counting twice a day, once during 
-opening (morning count) and another before closing (night count). For 
-each model, the employee will key in the total number of items counted
-in-store (assuming all models are displayed). The system should display 
-a confirmation message if the numbers match. However, if the numbers 
-do not tally, a warning message should appear.
-2. Stock In and Stock Out
-This feature records stock movements between outlets or from the 
-service center. 
-• Stock In - When new models are received from the service center 
-or other outlets. 
-• Stock Out - When models are transferred out to another outlet.
-Each stock movement must generate a text-based receipt containing:
-• Transaction Type (Stock In/Out)
-• Date and Time (automatic)
-• From (Outlet Code)
-• To (Outlet Code)
-• Model Name(s) with Quantity
-• Total Quantity
-• Name of Employee in Charge (automatic, based on the currently 
-logged-in account)
-Receipts should be saved by date, ensuring that records from previous 
-days are not overwritten. All stock movements for the same day should
-be appended to the same file.
- */
-
 
 // for input
 import java.util.Scanner;
+
+import my.edu.wix1002.goldenhour.StorageSystem.StoreManager;
+
 // to generate time
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -76,7 +49,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 // only this class can use (help to check the model status)
-class Model {
+class ModelStock {
     String modelCode;
     int price;
     static String [] recordedOutlet = StockManagement.modelOutlets();
@@ -98,6 +71,7 @@ public class StockManagement {
 
     // employee name!!!
     private static String employeeName = "";
+    private static String employeeID = "";
 
     private static Scanner allScanner = new Scanner(System.in);
 
@@ -107,8 +81,14 @@ public class StockManagement {
     private static SimpleDateFormat checkFormat_m = new SimpleDateFormat("mm");
 
     // main method need to call
-    public static void setEmployeeName(String name) {
+    public static void setEmployeeName(String name) 
+    {
         employeeName = name;
+    }
+
+    public static void setEmployeeID(String ID) 
+    {
+        employeeID = ID;
     }
 
     // present time in 12 hours
@@ -144,10 +124,10 @@ public class StockManagement {
                 String line = inputStream.readLine();
                 String[] title = line.split(",");
                 totalLines = title.length -2;
-                Model.recordedOutlet = new String[totalLines];
+                ModelStock.recordedOutlet = new String[totalLines];
                 for (int i = 2; i < title.length; i++)
                 {
-                    Model.recordedOutlet[i-2] = title[i];
+                    ModelStock.recordedOutlet[i-2] = title[i];
                 }
                 inputStream.close();
             }
@@ -219,14 +199,14 @@ public class StockManagement {
         return totalLines;
     }
 
-    private static Model[] createCSVModels()
+    private static ModelStock[] createCSVModels()
     {
         int totalLines = countModels();
-        Model[] a = new Model[totalLines];
+        ModelStock[] a = new ModelStock[totalLines];
         return a;
     }
     
-    private static void modelsRead(Model[] models){
+    private static void modelsRead(ModelStock[] models){
         try 
         {
             BufferedReader inputStream = new BufferedReader (new FileReader("data/model.csv"));
@@ -243,7 +223,7 @@ public class StockManagement {
                 }   
                 // basic information - attributes
                 String[] values = line.split(",");
-                Model model = new Model(); //one object
+                ModelStock model = new ModelStock(); //one object
                 model.modelCode = values[0]; // the first element is the code of the object
                 model.price = Integer.valueOf(values[1]); // the second element is the price of the object
                     
@@ -272,8 +252,8 @@ public class StockManagement {
     private static int modelsCheckIndex(String outlet)
     {
         int index = 0;
-        for (int i = 0; i < Model.recordedOutlet.length; i++){
-            if (Model.recordedOutlet[i].equals(outlet)){
+        for (int i = 0; i < ModelStock.recordedOutlet.length; i++){
+            if (ModelStock.recordedOutlet[i].equals(outlet)){
                 index = i;
                 break;
             }
@@ -281,7 +261,7 @@ public class StockManagement {
         return index;
     }
 
-    private static int modelsCheck(Model[] models, int index)
+    private static int modelsCheck(ModelStock[] models, int index)
     {
         int check = 0;
         int correct = 0;
@@ -418,7 +398,7 @@ public class StockManagement {
         {
             System.out.print("The store's code is: ");
             String outlet = allScanner.nextLine();
-            for (String outletC : Model.recordedOutlet)
+            for (String outletC : ModelStock.recordedOutlet)
             {
                 if (outletC.equals(outlet)){
                     valid = true;
@@ -515,7 +495,7 @@ public class StockManagement {
             System.out.println("Employee: " + employeeName);
         }
 
-        Model[] models = createCSVModels();
+        ModelStock[] models = createCSVModels();
         modelsRead(models);
         int index = modelsCheckIndex(store);
         int wrong = modelsCheck(models,index);
@@ -536,7 +516,7 @@ public class StockManagement {
         if (!employeeName.isEmpty()) {
             System.out.println("Employee: " + employeeName);
         }
-        Model[] models = createCSVModels();
+        ModelStock[] models = createCSVModels();
         modelsRead(models);
         int index = modelsCheckIndex(store);
         int wrong = modelsCheck(models,index);
@@ -596,7 +576,7 @@ public class StockManagement {
             {
                 break;
             }
-            Model[] models_ = createCSVModels();
+            ModelStock[] models_ = createCSVModels();
             modelsRead(models_);
             boolean valid = false;
             for (int i = 0; i<models_.length;i++)
@@ -704,8 +684,46 @@ public class StockManagement {
         System.out.println("Receipt generated: " + fileName);
     }
 
-    private static void stockIn(Date checkTime, String[] from_to, String[] modelCode,int[] quantity) {
+    private static void stockIn(Date checkTime, String[] from_to, String[] modelCode,int[] quantity) 
+    {
         generateReceipt(checkTime, from_to, modelCode, quantity);
+        
+        // Call StoreManager.appendStockIn() to record stock in
+        try {
+            String date = dateFormat.format(checkTime);
+            String time = checkFormat_h.format(checkTime) + ":" + checkFormat_m.format(checkTime);
+            String datetime = date + " " + time;
+            
+            String toOutletCode = "";
+            for (String line : from_to) {
+                if (line.startsWith("To:")) {
+                    String[] parts = line.split(" ");
+                    if (parts.length > 1) {
+                        toOutletCode = parts[1];
+                    }
+                    break;
+                }
+            }
+            
+            for (int i = 0; i < modelCode.length; i++) {
+                String[] stockData = {
+                    employeeID.isEmpty() ? employeeName : employeeID, // employeeID
+                    toOutletCode,  // outletCode
+                    datetime,      // date + time
+                    modelCode[i],  // modelID
+                    String.valueOf(quantity[i])  // quantity
+                };
+                
+                StoreManager.appendStockIn(stockData);
+            }
+            
+            System.out.println("Stock In information saved to database.");
+            
+        } 
+        catch (Exception e) 
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     // stock out
@@ -756,7 +774,7 @@ public class StockManagement {
             {
                 break;
             }
-            Model[] models_ = createCSVModels();
+            ModelStock[] models_ = createCSVModels();
             modelsRead(models_);
             boolean valid = false;
             for (int i = 0; i<models_.length;i++)
@@ -862,8 +880,51 @@ public class StockManagement {
         System.out.println("Receipt generated: " + fileName);
     }
 
-    private static void stockOut(Date checkTime, String[] from_to, String[] modelCode,int[] quantity) {
+    private static void stockOut(Date checkTime, String[] from_to, String[] modelCode,int[] quantity) 
+    {
         generateReceipt_out(checkTime, from_to, modelCode, quantity);
+        
+        // Call StoreManager.appendStockOut() to record stock out
+        try {
+            String date = dateFormat.format(checkTime);
+            String time = checkFormat_h.format(checkTime) + ":" + checkFormat_m.format(checkTime);
+            String datetime = date + " " + time;
+            
+            String fromOutletCode = "";
+            for (String line : from_to) {
+                if (line.startsWith("From:")) {
+                    String[] parts = line.split(" ");
+                    if (parts.length > 1) {
+                        if (line.contains("HQ")) {
+                            fromOutletCode = "HQ";
+                        } else {
+                            fromOutletCode = parts[1];
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            for (int i = 0; i < modelCode.length; i++) {
+                String[] stockData = {
+                    employeeID.isEmpty() ? employeeName : employeeID, // EmployeeID
+                    fromOutletCode,         // OutletCode
+                    datetime,               // Date
+                    modelCode[i],           // ModelID
+                    String.valueOf(quantity[i]),  // QuantityOut
+                    "Transfer"              // Reason
+                };
+                
+                StoreManager.appendStockOut(stockData);
+            }
+            
+            System.out.println("Stock Out information saved to database.");
+            
+        } 
+        catch (Exception e) 
+        {
+            System.out.println("Warning: Could not save stock out data to StoreManager: " + e.getMessage());
+        }
     }
 
 
